@@ -2,14 +2,12 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     env:
@@ -18,16 +16,24 @@ jobs:
       DOCKER_IMAGE: kindlegen
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Connect to DockerHub
-      run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - name: Connect to DockerHub
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9
 
-    - name: Tag Docker image as latest
-      run: docker image tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9 ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:latest
+      - name: Tag Docker image as latest
+        run: docker image tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9 ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:latest
 
-    - name: Push Docker image to DockerHub
-      run: docker push -a ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE
+      - name: Push Docker image to DockerHub
+        run: docker push -a ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE
+
+      - name: Push README to Dockerhub
+        uses: christian-korneck/update-container-description-action@v1
+        with:
+          destination_container_repo: wiltonsr/kindlegen
+          provider: dockerhub
+          short_description: "Docker image to run KindleGen, a tool provided by Amazon. It convert files to be used on the Kindle"
+          readme_file: "README.md"
