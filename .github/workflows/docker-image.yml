@@ -22,18 +22,18 @@ jobs:
         run: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9
+        run: docker build . --file Dockerfile --tag $DOCKER_USER/$DOCKER_IMAGE:2.9
 
       - name: Tag Docker image as latest
-        run: docker image tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9 ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:latest
+        run: docker image tag $DOCKER_USER/$DOCKER_IMAGE:2.9 $DOCKER_USER/$DOCKER_IMAGE:latest
 
       - name: Push Docker image to DockerHub
-        run: docker push -a ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE
+        run: docker push -a $DOCKER_USER/$DOCKER_IMAGE
 
       - name: Push README to Dockerhub
         uses: christian-korneck/update-container-description-action@v1
         with:
-          destination_container_repo: wiltonsr/kindlegen
+          destination_container_repo: ${{env.DOCKER_USER}}/${{env.DOCKER_IMAGE}}
           provider: dockerhub
           short_description: "Docker image to run KindleGen, a tool provided by Amazon. It convert files to be used on the Kindle"
           readme_file: "README.md"
