@@ -21,3 +21,5 @@ jobs:
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag wiltonsr/kindlegen:latest
+    - name: Push Docker image to DockerHub
+      run: docker push ${{secrets.DOCKER_USER}}/kindlegen
