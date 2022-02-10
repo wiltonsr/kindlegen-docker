@@ -12,14 +12,22 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      DOCKER_USER: ${{secrets.DOCKER_USER}}
+      DOCKER_PASS: ${{secrets.DOCKER_PASS}}
+      DOCKER_IMAGE: kindlegen
+
     steps:
     - uses: actions/checkout@v2
+
     - name: Connect to DockerHub
-      env:
-        DOCKER_USER: ${{secrets.DOCKER_USER}}
-        DOCKER_PASS: ${{secrets.DOCKER_PASS}}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag wiltonsr/kindlegen:latest
+      run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9
+
+    - name: Tag Docker image as latest
+      run: docker image tag ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:2.9 ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE:latest
+
     - name: Push Docker image to DockerHub
-      run: docker push ${{secrets.DOCKER_USER}}/kindlegen
+      run: docker push -a ${{secrets.DOCKER_USER}}/$DOCKER_IMAGE
